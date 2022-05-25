@@ -124,7 +124,7 @@ class MainProgram(WordScanner):
 			with open('bg.png', 'rb') as img:
 				image = img.read()
 			put_scope('word').style(f'border: 1px solid; width: 100%; padding: 10px; border-radius: 10px; margin: 0 0; background: url("http://pinsknews.by/wp-content/uploads/2021/05/%D0%A1%D0%BA%D0%B0%D0%BD%D0%B2%D0%BE%D1%80%D0%B4.jpg");')
-			put_text('S C A N W O R D E R', scope='word').style('color: rgba(42, 3, 82, 1); font-family: DejaVu Sans Mono, sans-serif; font-weight: bold; text-align: center; font-size: 180%')
+			put_text('|S|C|A|N|W|O|R|D|E|R|', scope='word').style('color: rgba(42, 3, 82, 1); font-family: DejaVu Sans Mono, sans-serif; font-weight: bold; text-align: center; font-size: 180%')
 			put_input('word', type=TEXT, scope='word', value=self.mask, help_text='маска слова ("-" любая буква) (пример: -ка--о-д)').style('font-size: 150%; font-weight: bold;')
 			put_input('required_', type=TEXT, scope='word', value=self.required, help_text='обязательные к использованию буквы например: рдс').style(
 				'font-size: 110%; font-weight: bold;')
