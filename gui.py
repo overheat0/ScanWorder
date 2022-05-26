@@ -82,24 +82,28 @@ class MainProgram(WordScanner):
 		
 	def click_ok(self):
 		# refresh variables
-		self.result = pd.DataFrame()
 		self.mask = str(pin.word).lower()
 		self.required = '' + str(pin.required_).lower()
 		self.prohibited_common = str(pin.prohibited_common).lower()
 		self.prohibited_positions = str(pin.prohibited_positions).lower()
 		
 		# check proper input
-		if len(self.mask) > 24:
-			toast('максимальная длина слова в словаре: 24 символа!')
-			self.mask = self.mask[:24]
-		
 		if self.mask == '':
 			toast('Не введена маска')
 			return
 		
+		if len(self.mask) > 24:
+			toast('максимальная длина слова в словаре: 24 символа!')
+			self.mask = self.mask[:24]
+			
+		
 		# activate search
+		with use_scope('word_info', clear=True):
+			put_loading(shape='grow', scope='word_info')
 		self.result = self.find_by_mask(mask_=self.mask, required_=self.required, prohibited_common=self.prohibited_common, prohibited_positions=self.prohibited_positions)
 		
+		self.result[' '] = '\t'*16
+		clear('word_info')
 		# check result
 		if len(self.result.values) == 0:
 			toast('ничего не найдено', color='error')
@@ -111,13 +115,20 @@ class MainProgram(WordScanner):
 		
 		# result OK,  preparing data
 		headers = self.result.keys().values.tolist()
+		"""PoS
+		Freq(ipm)
+		R
+		D
+		Doc"""
 		data = self.result.values.tolist()
 		table = [headers] + data
 		# output data to browser
-		with use_scope('result', clear=True):
-			put_scope('tmp_res').style(f'border: 1px solid; width: 100%; padding: 10px; border-radius: 10px; margin: 0 0; background: url("http://pinsknews.by/wp-content/uploads/2021/05/%D0%A1%D0%BA%D0%B0%D0%BD%D0%B2%D0%BE%D1%80%D0%B4.jpg");')
+		with use_scope('result', clear=True, create_scope=True):
+			put_text('\n', scope='result')
+			put_scope('tmp_res').style(f'border: 0px solid; width: 100%; padding: 10px; border-radius: 10px; margin: 0 0; background: url("http://pinsknews.by/wp-content/uploads/2021/05/%D0%A1%D0%BA%D0%B0%D0%BD%D0%B2%D0%BE%D1%80%D0%B4.jpg");')
 			put_text(f"найдено слов: {len(self.result['Lemma'].values)}", scope='tmp_res').style('color: rgba(42, 3, 82, 1)')
-			put_table(table, scope='tmp_res').style('width:100%; white-space:nowrap;')
+			put_table(table, scope='tmp_res').style('opacity: 0.8; font-size: 25px; table-layout: fixed; width: 100%;')
+		
 		
 	def main_window(self):
 		with use_scope(self.mp_scope, clear=True):
@@ -133,7 +144,8 @@ class MainProgram(WordScanner):
 			put_input('prohibited_positions', type=TEXT, scope='word', value=self.prohibited_positions,
 			          help_text='запрещенные буквы по позициям, например: 1:цптс;2:рми').style(
 				'font-size: 110%; font-weight: bold;')
-			put_button('ПОИСК', scope='word', onclick=lambda: self.click_ok())
+			put_row([put_button('ПОИСК', scope='word', onclick=lambda: self.click_ok()), put_scope('word_info').style('align: right; text-align: right')], scope='word', size='85% 15%')
+			
 			
 
 def Scanworder():
