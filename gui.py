@@ -18,16 +18,19 @@ class WordScanner:
 	
 	def __init__(self):
 		self.dictionary_df = self.read_from_file
-	
-	@property
+
 	def read_from_file(self):
 		dict_csv_path = 'Dict.csv'
-		dict_dataframe = pd.read_csv(filepath_or_buffer=dict_csv_path, sep='\t')
-		return dict_dataframe
+		dict_dataframe = pd.DataFrame()
+		try:
+			dict_dataframe = pd.read_csv(filepath_or_buffer=dict_csv_path, sep='\t')
+		except Exception as ex:
+			print(ex.args)
+		finally:
+			return dict_dataframe
 	
 	def find_by_mask(self, mask_, prohibited_common='', prohibited_positions='', required_=''):
 		mask_prohibited_list = '^'
-		tmp_mask_prohibited_list = ''
 		required = list(x for x in required_)
 		prohibited_pos_list = str(prohibited_positions).split(';')
 		
@@ -216,7 +219,7 @@ class MainProgram(WordScanner):
 def Scanworder():
 	# set environment
 	session.set_env(title=f'ScanWorder', output_animation=True)  # output_max_width='60%',
-	
+
 	program = MainProgram()
 	program.main_window()  # show main window and start
 
