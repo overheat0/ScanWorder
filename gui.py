@@ -1,3 +1,6 @@
+import os
+from os.path import isabs, join, normpath
+
 from pywebio import start_server, session, config
 from pywebio.input import *
 from pywebio.output import *
@@ -13,22 +16,20 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', 1000)
 pd.options.mode.chained_assignment = None
 
-			
+
+def read_from_file():
+	dict_csv_path = 'Dict.csv'
+	dict_dataframe = pd.read_csv(filepath_or_buffer=dict_csv_path, sep='\t')
+	if len(dict_dataframe) == 0:
+		raise FileExistsError
+	return dict_dataframe
+
+
 class WordScanner:
 	
 	def __init__(self):
-		self.dictionary_df = self.read_from_file
+		self.dictionary_df = read_from_file()
 
-	def read_from_file(self):
-		dict_csv_path = 'Dict.csv'
-		dict_dataframe = pd.DataFrame()
-		try:
-			dict_dataframe = pd.read_csv(filepath_or_buffer=dict_csv_path, sep='\t')
-		except Exception as ex:
-			print(ex.args)
-		finally:
-			return dict_dataframe
-	
 	def find_by_mask(self, mask_, prohibited_common='', prohibited_positions='', required_=''):
 		mask_prohibited_list = '^'
 		required = list(x for x in required_)
@@ -66,7 +67,6 @@ class WordScanner:
 		# filtering by required letters (finally)
 		for i in range(0, len(required)):
 			result = result[result['Lemma'].str.contains(required[i])]
-
 		return result
 		
 		
@@ -129,7 +129,7 @@ class MainProgram(WordScanner):
 				f'width: 100%; '
 				f'padding: 10px; '
 				f'border-radius: 10px; '
-				f'margin: 0 0; '
+				f'margin: 0 0; '				
 				f'background: url("http://pinsknews.by/wp-content/uploads/2021/05/%D0%A1%D0%BA%D0%B0%D0%BD%D0%B2%D0%BE%D1%80%D0%B4.jpg");'
 			)
 
@@ -145,16 +145,14 @@ class MainProgram(WordScanner):
 
 	def main_window(self):
 		with use_scope(self.mp_scope, clear=True):
-			with open('bg.png', 'rb') as img:
-				image = img.read()
 			put_scope(
 				'word'
 			).style(
-				f'border: 1px solid; '
-				f'width: 100%; '
-				f'padding: 10px; '
-				f'border-radius: 10px; '
-				f'margin: 0 0; '
+				f"border: 1px solid; "
+				f"width: 100%; "
+				f"padding: 10px; "
+				f"border-radius: 10px; "
+				f"margin: 0 0; "
 				f'background: url("http://pinsknews.by/wp-content/uploads/2021/05/%D0%A1%D0%BA%D0%B0%D0%BD%D0%B2%D0%BE%D1%80%D0%B4.jpg");'
 			)
 
